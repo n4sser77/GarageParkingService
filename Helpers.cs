@@ -12,16 +12,63 @@ namespace GarageParking
 
 
 
+        public static Vehicle RandomVehicle()
+        {
+
+            string[] colors = { "blue", "red", "black", "gray" };
+
+            string[] makeArray = { "harely", "chev", "storm" };
+            //       plate
+            // car,       bus,        bike
+            // electric,  passengers,  make
+            Random rnd = new Random();
+            int type = rnd.Next(1, 4);
+            int electric = rnd.Next(0, 1);
+            int passangers = rnd.Next(0, 10);
+            int makeIndex = rnd.Next(0, 3);
+            int color = rnd.Next(0, 4);
+
+
+            switch (type)
+            {
+                case 1:
+                    {
+                        if (electric == 1)
+                        {
+                            return new Car(colors[color], true);
+                        }
+                        else
+                        {
+                            return new Car(colors[color], false);
+                        }
+                    }
+
+                case 2:
+                    {
+                        return new Bus(colors[color], passangers);
+                    }
+
+                case 3:
+                    {
+                        return new MotorCycle(colors[color], makeArray[makeIndex]);
+                    }
+                default:
+                    Console.WriteLine("Could not make random vehicle");
+                    return null;
+            }
+        }
+
+
         /// <summary>
         /// takes plate input returns vehicle obejct
         /// </summary>
         /// <param name="garage"></param>
         /// <returns></returns>
-        static public Vehicle GetPlate(Garage garage)
+        public static Vehicle GetPlate(Garage garage)
         {
             try
             {
-                Console.Write("Enter plate: ");
+
                 Input = Console.ReadLine();
                 Vehicle v = garage.FindPlate(Input.ToUpper());
 

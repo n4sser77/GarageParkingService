@@ -6,29 +6,47 @@ namespace GarageParking
     {
         static void Main(string[] args)
         {
-            Car car = new Car("red", true);
-            Bus bus = new Bus("white", 8);
-            MotorCycle bike = new MotorCycle("black", "chevy");
-            MotorCycle bike2 = new MotorCycle("yello", "strand");
+
 
             Garage garage = new Garage();
 
 
 
 
-            garage.park(car);
-            garage.park(new Car("blue", true));
-            garage.park(bike);
-            garage.park(bike2);
-            garage.park(bus);
-
             while (true)
             {
-                Console.Clear();
+
+                Vehicle v = NewVehicleArival();
+
                 garage.PrintGarage();
-                var v = Helpers.GetPlate(garage);
-                garage.CheckOut(v);
-                Thread.Sleep(2000);
+
+                ConsoleKey key = Console.ReadKey(true).Key;
+
+                if (key == ConsoleKey.P)
+                {
+                    Console.Write("Enter plate to park: ");
+                    string input = Console.ReadLine();
+                    if (input.ToUpper() == v.LicensePlate && garage.park(v))
+                    {
+                        Console.WriteLine("Vehicle parked successfully! ");
+                    }
+                    else
+                    {
+                        Console.WriteLine("Could not park vehicle...");
+                    }
+
+                }
+                if (key == ConsoleKey.C)
+                {
+                    Console.Write("Enter plate to checkout: ");
+                    Vehicle c = Helpers.GetPlate(garage);
+                    if(garage.CheckOut(c)) Console.WriteLine(c.ToString() + " Checked out successfully");
+                    else Console.WriteLine("Could not checkout...");
+
+                }
+                //var v = Helpers.GetPlate(garage);
+
+                Thread.Sleep(3000);
 
 
 
@@ -36,6 +54,18 @@ namespace GarageParking
 
 
 
+        }
+
+        static Vehicle NewVehicleArival()
+        {
+            Vehicle v = Helpers.RandomVehicle();
+            Console.Clear();
+            Console.WriteLine("vehicle arrived: ");
+            if (v is Car car) Console.Write(car.ToString());
+            if (v is Bus bus) Console.Write(bus.ToString());
+            if (v is MotorCycle bike) Console.Write(bike.ToString());
+            Console.WriteLine("\n");
+            return v;
         }
 
 

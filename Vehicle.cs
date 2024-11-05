@@ -15,6 +15,11 @@ namespace GarageParking
         public int ParkedAt { get; set; }
         public bool IsParked { get; set; }
 
+        public override string ToString()
+        {
+            return $"type: {this.GetType().Name} | Color: {Color} | Plate: {LicensePlate}";
+        }
+
 
         public Vehicle(string color)
         {
@@ -59,7 +64,12 @@ namespace GarageParking
         public Car(string color, bool electric)
            : base(color)
         {
+            Electric = electric;
+        }
 
+        public override string ToString()
+        {
+            return base.ToString() + (Electric ? " | Electric" : " | Not electric");
         }
 
     }
@@ -72,7 +82,11 @@ namespace GarageParking
         public Bus(string color, int numberOfPassengers)
             : base(color)
         {
-
+            NumberOfPassengers = numberOfPassengers;
+        }
+        public override string ToString()
+        {
+            return base.ToString() + " | Passengers: " + NumberOfPassengers;
         }
     }
 
@@ -84,7 +98,12 @@ namespace GarageParking
         public MotorCycle(string color, string make)
            : base(color)
         {
+            Make = make;
+        }
 
+        public override string ToString()
+        {
+            return base.ToString() + " " + Make;
         }
     }
 }
