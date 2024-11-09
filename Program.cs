@@ -1,4 +1,5 @@
 ﻿using System.Data;
+using System.Diagnostics;
 
 namespace GarageParking
 {
@@ -10,29 +11,54 @@ namespace GarageParking
 
             Garage garage = new Garage();
 
+            Console.SetWindowSize(140, 30);
+
+
+            garage.park(NewVehicleArival());
+            garage.park(NewVehicleArival());
+            garage.park(NewVehicleArival());
+            garage.park(NewVehicleArival());
+            garage.park(NewVehicleArival());
+            garage.park(NewVehicleArival());
+            garage.park(NewVehicleArival());
+            garage.park(NewVehicleArival());
+            garage.park(NewVehicleArival());
+            garage.park(NewVehicleArival());
+            garage.park(NewVehicleArival());
+            garage.park(NewVehicleArival());
 
 
 
             while (true)
             {
 
+                PrintNavagtion();
                 Vehicle v = NewVehicleArival();
 
-                garage.PrintGarage();
+                garage.PrintGarageSET();
 
                 ConsoleKey key = Console.ReadKey(true).Key;
 
                 if (key == ConsoleKey.P)
                 {
                     Console.Write("Enter plate to park: ");
-                    string input = Console.ReadLine();
-                    if (input.ToUpper() == v.LicensePlate && garage.park(v))
+                    while (true)
                     {
-                        Console.WriteLine("Vehicle parked successfully! ");
-                    }
-                    else
-                    {
-                        Console.WriteLine("Could not park vehicle...");
+
+                        string input = Console.ReadLine();
+                        if (input.ToUpper() == v.LicensePlate && garage.park(v))
+                        {
+                            Console.WriteLine("Vehicle parked successfully! ");
+                            break;
+                        }
+                        else
+                        {
+                            Console.WriteLine("Could not park vehicle...");
+                        }
+                        if (Console.ReadKey().Key == ConsoleKey.X)
+                        {
+                            break;
+                        }
                     }
 
                 }
@@ -40,7 +66,12 @@ namespace GarageParking
                 {
                     Console.Write("Enter plate to checkout: ");
                     Vehicle c = Helpers.GetPlate(garage);
-                    if(garage.CheckOut(c)) Console.WriteLine(c.ToString() + " Checked out successfully");
+                    if (c == null)
+                    {
+                        Console.WriteLine("Vehcile not found...");
+                        continue;
+                    }
+                    if (garage.CheckOut(c)) Console.WriteLine(c.ToString() + " Checked out successfully");
                     else Console.WriteLine("Could not checkout...");
 
                 }
@@ -48,7 +79,7 @@ namespace GarageParking
 
                 Thread.Sleep(3000);
 
-
+                Console.Clear();
 
             }
 
@@ -59,13 +90,47 @@ namespace GarageParking
         static Vehicle NewVehicleArival()
         {
             Vehicle v = Helpers.RandomVehicle();
-            Console.Clear();
+            Console.SetCursorPosition(0, 0);
             Console.WriteLine("vehicle arrived: ");
             if (v is Car car) Console.Write(car.ToString());
             if (v is Bus bus) Console.Write(bus.ToString());
             if (v is MotorCycle bike) Console.Write(bike.ToString());
             Console.WriteLine("\n");
             return v;
+        }
+
+        static void PrintNavagtion()
+        {
+            Console.SetCursorPosition(0, Console.WindowHeight - 1);
+            Console.BackgroundColor = ConsoleColor.White;
+            Console.ForegroundColor = ConsoleColor.Black;
+            Console.Write("Press ");
+            Console.BackgroundColor = ConsoleColor.Magenta;
+            Console.ForegroundColor = ConsoleColor.White;
+            Console.Write(" P ");
+            Console.BackgroundColor = ConsoleColor.White;
+            Console.ForegroundColor = ConsoleColor.Black;
+            Console.Write(" to park vehicles");
+
+            Console.Write(", Press ");
+            Console.BackgroundColor = ConsoleColor.Magenta;
+            Console.ForegroundColor = ConsoleColor.White;
+            Console.Write(" C ");
+            Console.BackgroundColor = ConsoleColor.White;
+            Console.ForegroundColor = ConsoleColor.Black;
+            Console.Write(" to checkout");
+            Console.BackgroundColor = ConsoleColor.Black;
+            Console.ForegroundColor = ConsoleColor.White;
+
+            Console.Write(", Press ");
+            Console.BackgroundColor = ConsoleColor.Magenta;
+            Console.ForegroundColor = ConsoleColor.White;
+            Console.Write(" X ");
+            Console.BackgroundColor = ConsoleColor.White;
+            Console.ForegroundColor = ConsoleColor.Black;
+            Console.Write(" to exit park mode");
+            Console.BackgroundColor = ConsoleColor.Black;
+            Console.ForegroundColor = ConsoleColor.White;
         }
 
 

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Reflection.Metadata.Ecma335;
 using System.Text;
@@ -7,14 +8,20 @@ using System.Threading.Tasks;
 
 namespace GarageParking
 {
+
+    // valde abstract istället för interface pga behov av konstruktur. 
+    /// <summary>
+    /// Base abstract class for all vehicles.
+    /// </summary>
     internal abstract class Vehicle
     {
         public string LicensePlate { get; set; }
         public string Color { get; set; }
-        public virtual double ParkingSpace { get; protected set; } = 1.0;
         public int ParkedAt { get; set; }
         public bool IsParked { get; set; }
+        Stopwatch sw { get; set; }
 
+        // alla subclasser återanvänder basklassens ToString() och lägger till egna detaljer på strängen.
         public override string ToString()
         {
             return $"type: {this.GetType().Name} | Color: {Color} | Plate: {LicensePlate}";
@@ -23,35 +30,25 @@ namespace GarageParking
 
         public Vehicle(string color)
         {
-            LicensePlate = GetPlate();
+            LicensePlate = Helpers.GeneratePlate();
             Color = color;
+            sw = new Stopwatch();
 
         }
 
-        private string GetPlate()
+        public void StartParkingTimer()
         {
-            Random random = new Random();
-            int[] num = new int[3];
-            char[] chars = new char[3];
+            sw.Start();
+        }
 
-            for (int i = 0; i < 3; i++)
-            {
-                // 65 = A - 90 = Z in ASCI
-                chars[i] = (char)random.Next(65, 90); ;
+        public TimeSpan StopParkingTimer()
+        {
+            sw.Stop();
+            TimeSpan timespan = sw.Elapsed;
 
+            Console.WriteLine("timespan: " + timespan);
 
-            }
-
-            for (int i = 0; i < 3; i++)
-            {
-                num[i] = random.Next(0, 10);
-            }
-
-            // format output "ABC123"
-            return $"{chars[0]}{chars[1]}{chars[2]}{num[0]}{num[1]}{num[2]}";
-
-
-
+            return timespan;
         }
 
 
@@ -77,7 +74,7 @@ namespace GarageParking
     class Bus : Vehicle
     {
         public int NumberOfPassengers { get; set; }
-        public override double ParkingSpace { get; protected set; } = 2.0;
+
 
         public Bus(string color, int numberOfPassengers)
             : base(color)
@@ -93,7 +90,7 @@ namespace GarageParking
     class MotorCycle : Vehicle
     {
         public string Make { get; set; }
-        public override double ParkingSpace { get; protected set; } = 0.5;
+
 
         public MotorCycle(string color, string make)
            : base(color)
@@ -103,7 +100,7 @@ namespace GarageParking
 
         public override string ToString()
         {
-            return base.ToString() + " " + Make;
+            return base.ToString() + " | Make: " + Make;
         }
     }
 }

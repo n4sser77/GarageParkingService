@@ -76,6 +76,7 @@ namespace GarageParking
                 {
                     return v;
                 }
+                
 
                 return null;
             }
@@ -89,6 +90,32 @@ namespace GarageParking
                 Console.WriteLine(e);
                 throw;
             }
+
+
+
+        }
+
+        public static string GeneratePlate()
+        {
+            Random random = new Random();
+            int[] num = new int[3];
+            char[] chars = new char[3];
+
+            for (int i = 0; i < 3; i++)
+            {
+                // 65 = A - 90 = Z in ASCI
+                chars[i] = (char)random.Next(65, 90); ;
+
+
+            }
+
+            for (int i = 0; i < 3; i++)
+            {
+                num[i] = random.Next(0, 10);
+            }
+
+            // format output "ABC123"
+            return $"{chars[0]}{chars[1]}{chars[2]}{num[0]}{num[1]}{num[2]}";
 
 
 
