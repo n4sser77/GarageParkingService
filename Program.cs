@@ -11,9 +11,21 @@ namespace GarageParking
 
             Garage garage = new Garage();
 
+            MyServer myserver = new MyServer(garage);
+
+            myserver.StartServer();
+
+
+
+            StartConsoleInstance(garage);
+
+        }
+
+        static void StartConsoleInstance(Garage garage)
+        {
             Console.SetWindowSize(140, 30);
 
-
+            // intially parked vehicles
             garage.park(NewVehicleArival());
             garage.park(NewVehicleArival());
             garage.park(NewVehicleArival());
@@ -65,7 +77,7 @@ namespace GarageParking
                 if (key == ConsoleKey.C)
                 {
                     Console.Write("Enter plate to checkout: ");
-                    Vehicle c = Helpers.GetPlate(garage);
+                    Vehicle c = Helpers.GetPlateFromGarage(garage);
                     if (c == null)
                     {
                         Console.WriteLine("Vehcile not found...");
@@ -82,8 +94,6 @@ namespace GarageParking
                 Console.Clear();
 
             }
-
-
 
         }
 
@@ -122,6 +132,8 @@ namespace GarageParking
             Console.BackgroundColor = ConsoleColor.Black;
             Console.ForegroundColor = ConsoleColor.White;
 
+            Console.BackgroundColor = ConsoleColor.White;
+            Console.ForegroundColor = ConsoleColor.Black;
             Console.Write(", Press ");
             Console.BackgroundColor = ConsoleColor.Magenta;
             Console.ForegroundColor = ConsoleColor.White;
@@ -132,6 +144,8 @@ namespace GarageParking
             Console.BackgroundColor = ConsoleColor.Black;
             Console.ForegroundColor = ConsoleColor.White;
         }
+
+
 
 
     }

@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace GarageParking
 {
-    internal class Helpers
+    public class Helpers
     {
         static private string Input { get; set; }
 
@@ -64,7 +64,7 @@ namespace GarageParking
         /// </summary>
         /// <param name="garage"></param>
         /// <returns></returns>
-        public static Vehicle GetPlate(Garage garage)
+        public static Vehicle GetPlateFromGarage(Garage garage)
         {
             try
             {

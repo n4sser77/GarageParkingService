@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace GarageParking
 {
-    internal class Garage
+    public class Garage
     {
 
         public double MaxParkingSpaces { get; private set; } = 15;
@@ -59,6 +59,8 @@ namespace GarageParking
                 Space[spot + 1].IsTaken = true;
                 Space[spot].Vehicle = vehicle;
                 Space[spot + 1].Vehicle = vehicle;
+                Space[spot].VehicleType = vehicle.GetType().Name;
+                Space[spot + 1].VehicleType = vehicle.GetType().Name;
 
                 vehicle.StartParkingTimer();
                 return true;
@@ -73,6 +75,7 @@ namespace GarageParking
                         Space[spot].Bikes[j] = vehicle as MotorCycle;
                         Space[spot].IsTaken = true;
                         VehiclesParked.Add(vehicle);
+                        Space[spot].VehicleType = vehicle.GetType().Name;
 
                         vehicle.StartParkingTimer();
                         return true;
@@ -89,6 +92,7 @@ namespace GarageParking
                 VehiclesParked.Add(vehicle);
                 Space[spot].IsTaken = true;
                 Space[spot].Vehicle = vehicle;
+                Space[spot].VehicleType = vehicle.GetType().Name;
 
                 vehicle.StartParkingTimer();
 
@@ -358,10 +362,10 @@ namespace GarageParking
 
     }
 
-    class Space
+    public class Space
     {
         public bool IsTaken { get; set; }
-
+        public string VehicleType { get; set; }
         public Vehicle Vehicle { get; set; }
 
         public MotorCycle[] Bikes { get; set; }

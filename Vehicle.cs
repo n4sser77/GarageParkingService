@@ -13,13 +13,13 @@ namespace GarageParking
     /// <summary>
     /// Base abstract class for all vehicles.
     /// </summary>
-    internal abstract class Vehicle
+    public abstract class Vehicle
     {
         public string LicensePlate { get; set; }
         public string Color { get; set; }
         public int ParkedAt { get; set; }
         public bool IsParked { get; set; }
-        Stopwatch sw { get; set; }
+        public Stopwatch sw { get; set; }
 
         // alla subclasser återanvänder basklassens ToString() och lägger till egna detaljer på strängen.
         public override string ToString()
@@ -54,7 +54,7 @@ namespace GarageParking
 
     }
 
-    class Car : Vehicle
+    public class Car : Vehicle
     {
         public bool Electric { get; set; }
 
@@ -71,7 +71,7 @@ namespace GarageParking
 
     }
 
-    class Bus : Vehicle
+    public class Bus : Vehicle
     {
         public int NumberOfPassengers { get; set; }
 
@@ -87,7 +87,7 @@ namespace GarageParking
         }
     }
 
-    class MotorCycle : Vehicle
+    public class MotorCycle : Vehicle
     {
         public string Make { get; set; }
 

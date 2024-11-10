@@ -1,0 +1,170 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Parking Spaces</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            padding: 20px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+
+        table, th, td {
+            border: 1px solid #ddd;
+        }
+
+        th, td {
+            padding: 8px;
+            text-align: center;
+        }
+
+        th {
+            background-color: #f2f2f2;
+        }
+
+        .occupied {
+            background-color: #ffcccb;
+        }
+
+        .available {
+            background-color: #90ee90;
+        }
+
+        .vehicle, .bike {
+            margin: 5px 0;
+            padding: 5px;
+            background-color: #e0e0e0;
+            border-radius: 3px;
+        }
+
+        .time-span {
+            font-size: 0.9em;
+            color: #555;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Parking Spaces and Vehicles</h1>
+    <table id="parkingTable">
+        <thead>
+            <tr>
+                <th>Space #</th>
+                <th>Status</th>
+                <th>Vehicle</th>
+                <th>Bikes</th>
+                <th>Time Spent</th>
+            </tr>
+        </thead>
+        <tbody>
+            <!-- Dynamic rows will be inserted here -->
+        </tbody>
+    </table>
+
+    <script>
+        // Fetch the parking data from the backend
+        async function fetchParkingData() {
+            try {
+                const response = await fetch('http://localhost:5000/list');
+                const parkingData = await response.json();
+                displayParkingData(parkingData);
+            } catch (error) {
+                console.error('Error fetching parking data:', error);
+            }
+        }
+
+        // Convert milliseconds to a human-readable time format (hours, minutes, seconds)
+        function formatTime(milliseconds) {
+            const totalSeconds = Math.floor(milliseconds / 1000);
+            const hours = Math.floor(totalSeconds / 3600);
+            const minutes = Math.floor((totalSeconds % 3600) / 60);
+            const seconds = totalSeconds % 60;
+
+            return `${hours} hours, ${minutes} minutes, ${seconds} seconds`;
+        }
+
+        // Display parking data in the table
+        function displayParkingData(data) {
+            const tableBody = document.querySelector('#parkingTable tbody');
+            tableBody.innerHTML = ''; // Clear existing rows
+
+            data.forEach((space, index) => {
+                const row = document.createElement('tr');
+
+                // Add space number (index + 1)
+                const spaceNumberCell = document.createElement('td');
+                spaceNumberCell.textContent = index + 1;
+                row.appendChild(spaceNumberCell);
+
+                // Add space status (Occupied or Available)
+                const statusCell = document.createElement('td');
+                statusCell.textContent = space.IsTaken ? 'Occupied' : 'Available';
+                statusCell.classList.add(space.IsTaken ? 'occupied' : 'available');
+                row.appendChild(statusCell);
+
+                // Add vehicle info (if present)
+                const vehicleCell = document.createElement('td');
+                if (space.Vehicle) {
+                    vehicleCell.innerHTML = `
+                                                        <div class="vehicle">
+                                                            <h2>${space.VehicleType}</h2>
+                                                            <strong>Plate:</strong> ${space.Vehicle.LicensePlate}<br>
+                                                            <strong>Color:</strong> ${space.Vehicle.Color}
+                                                            <strong>Time:</strong> ${space.Vehicle.sw.Elapsed}
+                                                        </div>
+                                                    `;
+                } else {
+                    vehicleCell.textContent = 'No vehicle';
+                }
+                row.appendChild(vehicleCell);
+
+                // Add bikes info (if present)
+                const bikesCell = document.createElement('td');
+                if (space.Bikes && space.Bikes.length > 0) {
+                    space.Bikes.forEach(bike => {
+                        if (bike) {
+                            bikesCell.innerHTML += `
+                                                                <div class="bike">
+                                                                    <strong>Make:</strong> ${bike.Make}<br>
+                                                                    <strong>Plate:</strong> ${bike.LicensePlate}<br>
+                                                                    <strong>Color:</strong> ${bike.Color}
+                                                                    <strong>Time:</strong> ${bike.sw.Elapsed}
+                                                                </div>
+                                                            `;
+                        } else {
+                            bikesCell.innerHTML += '<div class="bike">No bike</div>';
+                        }
+                    });
+                } else {
+                    bikesCell.textContent = 'No bikes';
+                }
+                row.appendChild(bikesCell);
+
+                // Add time span (based on stopwatch ElapsedMilliseconds)
+                const timeSpanCell = document.createElement('td');
+                if (space.sw && space.sw.ElapsedMilliseconds !== undefined) {
+                    const timeSpan = formatTime(space.sw.ElapsedMilliseconds);
+                    timeSpanCell.innerHTML = `<span class="time-span">${timeSpan}</span>`;
+                } else {
+                    timeSpanCell.textContent = 'N/A';
+                }
+                row.appendChild(timeSpanCell);
+
+                // Append the row to the table body
+                tableBody.appendChild(row);
+            });
+        }
+
+        // Initialize the page by fetching the data
+        fetchParkingData();
+    </script>
+</body>
+</html>
