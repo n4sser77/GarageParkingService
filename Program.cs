@@ -37,7 +37,7 @@ namespace GarageParking
             garage.park(NewVehicleArival());
             garage.park(NewVehicleArival());
             garage.park(NewVehicleArival());
-            garage.park(NewVehicleArival());
+            
 
 
 
@@ -102,6 +102,12 @@ namespace GarageParking
         static Vehicle NewVehicleArival()
         {
             Vehicle v = Helpers.RandomVehicle();
+            Console.SetCursorPosition(0, 1);
+
+            for(int i = 0; i < 130; i++)
+            {
+                Console.Write("   ");
+            }
             Console.SetCursorPosition(0, 0);
             Console.WriteLine("vehicle arrived: ");
             if (v is Car car) Console.Write(car.ToString());
@@ -152,7 +158,11 @@ namespace GarageParking
         {
             foreach (Space s in garage.Space)
             {
-                s.Vehicle.Total = s.Vehicle.sw.Elapsed.TotalMinutes / garage.PricePerMin;
+                if (s.Vehicle != null)
+                {
+                    double total = s.Vehicle.sw.Elapsed.TotalMinutes / garage.PricePerMin;
+                    s.Vehicle.Total = Math.Round(total, 2);
+                }
 
             }
         }
