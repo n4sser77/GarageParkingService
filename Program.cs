@@ -91,7 +91,9 @@ namespace GarageParking
 
                 Thread.Sleep(3000);
 
+
                 Console.Clear();
+                SendTotal(garage);
 
             }
 
@@ -146,7 +148,17 @@ namespace GarageParking
         }
 
 
+        static public void SendTotal(Garage garage)
+        {
+            foreach (Space s in garage.Space)
+            {
+                s.Vehicle.Total = s.Vehicle.sw.Elapsed.TotalMinutes / garage.PricePerMin;
 
+            }
+        }
 
     }
+
+
+
 }

@@ -154,8 +154,9 @@ namespace GarageParking
                         if (Space[i].Bikes[j] == v as MotorCycle)
                         {
                             double total = ((double)v.StopParkingTimer().TotalMinutes) / PricePerMin;
+                            v.Total = total;
                             Space[i].Bikes[j] = null; // Remove the motorcycle from this spot
-                            Console.WriteLine("Motorcycle checked out from spot " + i + " Total price is " + total.ToString("0.00") + "SEK");
+                            Console.WriteLine("Motorcycle checked out from spot " + i + " Total price is " + v.Total.ToString("0.00") + "SEK");
                             found = true;
                             if (Space[i].Bikes[0] == null && Space[i].Bikes[1] == null)
                             {
@@ -178,10 +179,11 @@ namespace GarageParking
                         if (i + 1 < Space.Count && Space[i + 1].Vehicle == v)
                         {
                             double total = ((double)v.StopParkingTimer().TotalMinutes) / PricePerMin;
+                            v.Total = total;
                             Space[i + 1].Vehicle = null; // Clear the second spot of the bus
                             Space[i + 1].IsTaken = false;
                             VehiclesParked.Remove(VehiclesParked.FirstOrDefault(v));
-                            Console.WriteLine("Bus checked out from spots " + i + " and " + (i + 1) + " Total price is " + total.ToString("0.00") + "SEK");
+                            Console.WriteLine("Bus checked out from spots " + i + " and " + (i + 1) + " Total price is " + v.Total.ToString("0.00") + "SEK");
                             return true;
                         }
                     }
@@ -190,7 +192,8 @@ namespace GarageParking
                     {
 
                         double total = ((double)v.StopParkingTimer().TotalMinutes) / PricePerMin;
-                        Console.WriteLine("Vehicle " + Space[i].Vehicle.LicensePlate + " is now checked out." + " Total price is " + total.ToString("0.00") + "SEK");
+                        v.Total = total;
+                        Console.WriteLine("Vehicle " + Space[i].Vehicle.LicensePlate + " is now checked out." + " Total price is " + v.Total.ToString("0.00") + "SEK");
                         Space[i].Vehicle = null;
                         Space[i].IsTaken = false;
                         VehiclesParked.Remove(VehiclesParked.FirstOrDefault(v));

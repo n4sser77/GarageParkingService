@@ -19,6 +19,7 @@ namespace GarageParking
         public string Color { get; set; }
         public int ParkedAt { get; set; }
         public bool IsParked { get; set; }
+        public double Total { get; set; }
         public Stopwatch sw { get; set; }
 
         // alla subclasser återanvänder basklassens ToString() och lägger till egna detaljer på strängen.
@@ -90,6 +91,8 @@ namespace GarageParking
     public class MotorCycle : Vehicle
     {
         public string Make { get; set; }
+
+        public double Total => base.Total;
 
 
         public MotorCycle(string color, string make)
