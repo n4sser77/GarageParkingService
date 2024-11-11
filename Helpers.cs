@@ -24,7 +24,7 @@ namespace GarageParking
             Random rnd = new Random();
             int type = rnd.Next(1, 4);
             int electric = rnd.Next(0, 1);
-            int passangers = rnd.Next(0, 10);
+            int passangers = rnd.Next(7, 14);
             int makeIndex = rnd.Next(0, 3);
             int color = rnd.Next(0, 4);
 

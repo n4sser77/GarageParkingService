@@ -18,7 +18,6 @@ namespace GarageParking
         public string LicensePlate { get; set; }
         public string Color { get; set; }
         public int ParkedAt { get; set; }
-        public bool IsParked { get; set; }
         Stopwatch sw { get; set; }
 
         // alla subclasser återanvänder basklassens ToString() och lägger till egna detaljer på strängen.
@@ -41,12 +40,22 @@ namespace GarageParking
             sw.Start();
         }
 
-        public TimeSpan StopParkingTimer()
+        public TimeSpan StopParkingTimer(double pricePerMin)
         {
             sw.Stop();
             TimeSpan timespan = sw.Elapsed;
+            double total = timespan.TotalMinutes / pricePerMin;
+            Receipt r = new Receipt()
+            {
+                VehicleType = this.GetType().Name,
+                LicensePlate = this.LicensePlate,
+                ParkingSpot = this.ParkedAt,
+                Price = Math.Round(total,2)
+                
+            };
 
-            Console.WriteLine("timespan: " + timespan);
+
+            r.LogReceipt(r);
 
             return timespan;
         }
