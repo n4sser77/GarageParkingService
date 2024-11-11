@@ -1,5 +1,6 @@
 ﻿using System.Data;
 using System.Diagnostics;
+using System.Net;
 
 namespace GarageParking
 {
@@ -110,6 +111,11 @@ namespace GarageParking
             }
             Console.SetCursorPosition(0, 0);
             Console.WriteLine("vehicle arrived: ");
+            for (int i = 0; i < 100; i++)
+            {
+                Console.Write(" ");
+            }
+            Console.SetCursorPosition(0, 1);
             if (v is Car car) Console.Write(car.ToString());
             if (v is Bus bus) Console.Write(bus.ToString());
             if (v is MotorCycle bike) Console.Write(bike.ToString());
@@ -122,7 +128,7 @@ namespace GarageParking
             Console.SetCursorPosition(0, Console.WindowHeight - 1);
             Console.BackgroundColor = ConsoleColor.White;
             Console.ForegroundColor = ConsoleColor.Black;
-            Console.Write("Press ");
+            Console.Write(" Press ");
             Console.BackgroundColor = ConsoleColor.Magenta;
             Console.ForegroundColor = ConsoleColor.White;
             Console.Write(" P ");
