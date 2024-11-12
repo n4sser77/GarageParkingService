@@ -40,6 +40,8 @@ namespace GarageParking
         public void StartParkingTimer()
         {
             sw.Start();
+
+            
         }
 
         public TimeSpan StopParkingTimer(double pricePerMin)

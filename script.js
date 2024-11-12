@@ -1,9 +1,33 @@
-﻿// Fetch the parking data from the backend
+﻿
+
+//SUBMITTING LICENSEPLATE
+async function handleFormSubmit(event) {
+    event.preventDefault(); // Prevent the form from submitting the default way
+
+    const form = event.target;
+    const licensePlate = document.getElementById("licensePlate").value;
+
+    // Send the form data as a POST request
+    const response = await fetch(form.action, {
+        method: "POST",
+        headers: {
+            "Content-Type": "text/plain" // Send the license plate as plain text
+        },
+        body: licensePlate
+    });
+
+    // Get the response message
+    const message = await response.text();
+    alert(message); // Display message in an alert popup
+}
+
+
+// Fetch the parking data from the backend
 async function fetchParkingData() {
     try {
         const response = await fetch('http://localhost:5000/list');
         const parkingData = await response.json();
-        
+
         displayParkingData(parkingData);
     } catch (error) {
         console.error('Error fetching parking data:', error);
@@ -99,7 +123,7 @@ function createTimeSpanCell(space) {
     if (space.Vehicle) {
         cell.innerHTML = `
             <span class="time-span">${formatTime(space.Vehicle.sw.ElapsedMilliseconds)}</span><br>
-            <span class="time-span">Total: ${space.Vehicle.Total}</span>
+            <span class="time-span">Total: ${space.Vehicle.Total} SEK</span>
         `;
         console.log(space.Vehicle.Total)
     } else if (space.Bikes && space.Bikes.length > 0) {
@@ -107,7 +131,7 @@ function createTimeSpanCell(space) {
             if (bike) {
                 cell.innerHTML += `
                     <span class="time-span">${bike.LicensePlate}: ${formatTime(bike.sw.ElapsedMilliseconds)}</span><br>
-                    <span class="time-span">Total: ${bike.Total}</span><br>
+                    <span class="time-span">Total: ${bike.Total} SEK</span><br>
                 `;
                 console.log(bike.Total)
             }

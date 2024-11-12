@@ -105,8 +105,17 @@ namespace GarageParking
 
         public Vehicle FindPlate(string input)
         {
+
+            if (input == null)
+            {
+                return null;
+            }
             // Convert input to uppercase once to avoid repeated conversions in the loop
+
+
             string upperInput = input.ToUpper();
+
+
 
             for (int i = 0; i < Space.Count; i++)
             {
@@ -137,6 +146,88 @@ namespace GarageParking
             return null;
         }
 
+        public bool CheckOut(Vehicle v, out string message)
+        {
+            bool found = false;
+
+            for (int i = 0; i < Space.Count; i++)
+            {
+
+
+                // Check if it's a motorcycle and if it’s parked in the Bikes array
+                if (v is MotorCycle)
+                {
+                    // Loop through Bikes array to find and remove the motorcycle
+                    for (int j = 0; j < Space[i].Bikes.Length; j++)
+                    {
+                        if (Space[i].Bikes[j] == v as MotorCycle)
+                        {
+                            double total = ((double)v.StopParkingTimer(PricePerMin).TotalMinutes) / PricePerMin;
+                            v.Total = total;
+                            Space[i].Bikes[j] = null; // Remove the motorcycle from this spot
+                            Console.WriteLine("Vehicle " + v.LicensePlate + " is now checked out." + " Total price is " + total.ToString("0.00") + "SEK");
+                            message = "Vehicle " + v.LicensePlate + " is now checked out." + " Total price is " + total.ToString("0.00") + "SEK";
+                            found = true;
+                            if (Space[i].Bikes[0] == null && Space[i].Bikes[1] == null)
+                            {
+                                Space[i].IsTaken = false;
+                            }
+
+                            VehiclesParked.Remove(VehiclesParked.FirstOrDefault(v));
+                            return true;
+                        }
+                    }
+                }
+                else if (Space[i].Vehicle == v) // For other types of vehicles
+                {
+                    // Check if it's a bus occupying two consecutive spots
+                    if (v is Bus)
+                    {
+                        Space[i].Vehicle = null; // Clear the first spot of the bus
+                        Space[i].IsTaken = false;
+
+                        if (i + 1 < Space.Count && Space[i + 1].Vehicle == v)
+                        {
+                            double total = ((double)v.StopParkingTimer(PricePerMin).TotalMinutes) / PricePerMin;
+                            v.Total = total;
+                            Console.WriteLine("Vehicle " + v.LicensePlate + " is now checked out." + " Total price is " + total.ToString("0.00") + "SEK");
+                            message = "Vehicle " + v.LicensePlate + " is now checked out." + " Total price is " + total.ToString("0.00") + "SEK";
+                            Space[i + 1].Vehicle = null; // Clear the second spot of the bus
+                            Space[i + 1].IsTaken = false;
+                            VehiclesParked.Remove(VehiclesParked.FirstOrDefault(v));
+                            return true;
+                        }
+                    }
+
+                    else if (v is Car) // For cars or other vehicles occupying one spot
+                    {
+
+                        double total = ((double)v.StopParkingTimer(PricePerMin).TotalMinutes) / PricePerMin;
+                        v.Total = total;
+                        Console.WriteLine("Vehicle " + v.LicensePlate + " is now checked out." + " Total price is " + total.ToString("0.00") + "SEK");
+                        message = "Vehicle " + v.LicensePlate + " is now checked out." + " Total price is " + total.ToString("0.00") + "SEK";
+                        Space[i].Vehicle = null;
+                        Space[i].IsTaken = false;
+                        VehiclesParked.Remove(VehiclesParked.FirstOrDefault(v));
+                        return true;
+                    }
+
+
+                    message = "Could not successfully checkout vehicle";
+                    return false;
+                }
+            }
+
+            // If the vehicle was not found in any spot
+            if (!found)
+            {
+                Console.WriteLine("Vehicle not found");
+                message = "Vehicle not found";
+                return false;
+            }
+            message = "Not found";
+            return false;
+        }
         public bool CheckOut(Vehicle v)
         {
             bool found = false;
@@ -164,6 +255,7 @@ namespace GarageParking
                             }
 
                             VehiclesParked.Remove(VehiclesParked.FirstOrDefault(v));
+
                             return true;
                         }
                     }
@@ -184,6 +276,8 @@ namespace GarageParking
                             Space[i + 1].IsTaken = false;
                             VehiclesParked.Remove(VehiclesParked.FirstOrDefault(v));
                             Console.WriteLine("Bus checked out from spots " + i + " and " + (i + 1) + " Total price is " + v.Total.ToString("0.00") + "SEK");
+
+
                             return true;
                         }
                     }
@@ -202,8 +296,8 @@ namespace GarageParking
                     }
 
 
-                    found = true;
-                    return true;
+
+                    return false;
                 }
             }
 
@@ -211,16 +305,21 @@ namespace GarageParking
             if (!found)
             {
                 Console.WriteLine("Vehicle not found");
+
                 return false;
             }
+
             return false;
         }
+
 
 
         private int LookForSpot(Vehicle vehicle)
         {
             for (int i = 0; i < Space.Count; i++)
             {
+
+
 
 
                 if ((vehicle is MotorCycle && Space[i].IsTaken))
@@ -240,7 +339,12 @@ namespace GarageParking
                     }
                 }
 
-                if (i == Space.Count - 1)
+                if (vehicle is Car && !Space[i].IsTaken)
+                {
+                    return i;
+                }
+
+                if (vehicle is Bus && i == Space.Count - 1)
                 {
                     return -1;
                 }
@@ -248,10 +352,8 @@ namespace GarageParking
                 {
                     return i;
                 }
-                if (vehicle is Car && !Space[i].IsTaken)
-                {
-                    return i;
-                }
+
+
 
 
             }

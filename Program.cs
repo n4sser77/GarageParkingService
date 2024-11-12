@@ -14,13 +14,20 @@ namespace GarageParking
 
             MyServer myserver = new MyServer(garage);
 
+            Thread thread2 = new Thread(() => UpdateTotal(garage));
+
+
             myserver.StartServer();
-
-
 
             StartConsoleInstance(garage);
 
+
         }
+
+
+
+
+
 
         static void StartConsoleInstance(Garage garage)
         {
@@ -38,7 +45,7 @@ namespace GarageParking
             garage.park(NewVehicleArival());
             garage.park(NewVehicleArival());
             garage.park(NewVehicleArival());
-            
+
 
 
 
@@ -49,6 +56,7 @@ namespace GarageParking
                 Vehicle v = NewVehicleArival();
 
                 garage.PrintGarageSET();
+
 
                 ConsoleKey key = Console.ReadKey(true).Key;
 
@@ -78,7 +86,7 @@ namespace GarageParking
                 if (key == ConsoleKey.C)
                 {
                     Console.Write("Enter plate to checkout: ");
-                    Vehicle c = Helpers.GetPlateFromGarage(garage);
+                    Vehicle c = Helpers.GetVehicleFromGaragge(garage);
                     if (c == null)
                     {
                         Console.WriteLine("Vehcile not found...");
@@ -94,7 +102,7 @@ namespace GarageParking
 
 
                 Console.Clear();
-                SendTotal(garage);
+
 
             }
 
@@ -105,7 +113,7 @@ namespace GarageParking
             Vehicle v = Helpers.RandomVehicle();
             Console.SetCursorPosition(0, 1);
 
-            for(int i = 0; i < 130; i++)
+            for (int i = 0; i < 130; i++)
             {
                 Console.Write("   ");
             }
@@ -160,15 +168,37 @@ namespace GarageParking
         }
 
 
-        static public void SendTotal(Garage garage)
+        static public void UpdateTotal(Garage garage)
         {
-            foreach (Space s in garage.Space)
+            while (true)
             {
-                if (s.Vehicle != null)
+
+
+                foreach (Space s in garage.Space)
                 {
-                    double total = s.Vehicle.sw.Elapsed.TotalMinutes / garage.PricePerMin;
-                    s.Vehicle.Total = Math.Round(total, 2);
+                    if (s.Vehicle != null)
+                    {
+                        double total = s.Vehicle.sw.Elapsed.TotalMinutes / garage.PricePerMin;
+                        s.Vehicle.Total = Math.Round(total, 2);
+                    }
+
+                    if (s.Bikes[0] != null)
+                    {
+                        double total = s.Bikes[0].sw.Elapsed.TotalMinutes / garage.PricePerMin;
+                        (s.Bikes[0] as Vehicle).Total = Math.Round(total, 2);
+                    }
+
+                    if (s.Bikes[1] != null)
+                    {
+                        double total = s.Bikes[1].sw.Elapsed.TotalMinutes / garage.PricePerMin;
+                        (s.Bikes[1] as Vehicle).Total = Math.Round(total, 2);
+                    }
+
                 }
+
+
+
+                Thread.Sleep(1000);
 
             }
         }

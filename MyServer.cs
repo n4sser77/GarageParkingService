@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Specialized;
 using System.Linq;
 using System.Net;
 using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
+using System.Web;
 
 namespace GarageParking
 {
@@ -65,14 +67,17 @@ namespace GarageParking
 
             switch (request.Url.AbsolutePath)
             {
+                case "/":
+                    await HandleRoot(response);
+                    break;
                 case "/arrive":
                     await HandleArrive(response);
                     break;
                 case "/checkout":
-                    await HandleCheckout(response);
+                    await HandleCheckout(response, request);
                     break;
                 case "/list":
-                    await ListJson(response);
+                    await HandleListJson(response);
                     break;
                 default:
                     response.StatusCode = 404;
@@ -91,11 +96,72 @@ namespace GarageParking
             await response.OutputStream.WriteAsync(Encoding.UTF8.GetBytes(message));
         }
 
-        async Task HandleCheckout(HttpListenerResponse response)
+        async Task HandleCheckout(HttpListenerResponse response, HttpListenerRequest request)
         {
-            string message = "Checkout route accessed";
-            response.StatusCode = 200;
-            await response.OutputStream.WriteAsync(Encoding.UTF8.GetBytes(message));
+            if (request.HttpMethod == "POST")
+            {
+                using (StreamReader sr = new StreamReader(request.InputStream, request.ContentEncoding))
+                {
+                    string licensePlateData = await sr.ReadToEndAsync();
+                    string message = string.Empty;
+
+                    // only when using named input field in html
+                    // NameValueCollection ParsedData = HttpUtility.ParseQueryString(licensePlateData);
+                    // string licensePlate = ParsedData["licensePlate"];
+                    try
+                    {
+                        Vehicle v = Garage.FindPlate(licensePlateData);
+                        if (v != null)
+                        {
+
+                            bool success = Garage.CheckOut(v, out message);
+
+                            if (success)
+                            {
+                                response.StatusCode = 200;
+                            }
+                            else
+                            {
+                                response.StatusCode = 404;
+                            }
+                        }
+                    }
+                    catch (Exception e)
+                    {
+                        message = $"Error proccessing checkout: {e.Message}";
+                        response.StatusCode = 500;
+                    }
+
+
+
+                    byte[] buffer = Encoding.UTF8.GetBytes(message);
+                    await response.OutputStream.WriteAsync(buffer, 0, buffer.Length);
+
+                }
+            }
+            else
+            {
+                response.StatusCode = 405;
+                byte[] buffer = Encoding.UTF8.GetBytes("Method Not allowed");
+                await response.OutputStream.WriteAsync(buffer, 0, buffer.Length);
+            }
+        }
+
+        async Task HandleRoot(HttpListenerResponse response)
+        {
+
+
+            // Construct a response.
+            string responseString = "<HTML><BODY> Hello world!</BODY></HTML>";
+            byte[] buffer = System.Text.Encoding.UTF8.GetBytes(responseString);
+            // Get a response stream and write the response to it.
+            response.ContentLength64 = buffer.Length;
+            System.IO.Stream output = response.OutputStream;
+            output.Write(buffer, 0, buffer.Length);
+            // You must close the output stream.
+            output.Close();
+
+
         }
 
         async Task HandleList(HttpListenerResponse response)
@@ -105,28 +171,9 @@ namespace GarageParking
             await response.OutputStream.WriteAsync(Encoding.UTF8.GetBytes(message));
         }
 
-        async Task ListJson(HttpListenerResponse response)
+        async Task HandleListJson(HttpListenerResponse response)
         {
-            //List<TimeSpan> vehiclesTimer = new List<TimeSpan>();
-            //foreach (Space s in Garage.Space)
-            //{
-            //    if (s.Vehicle != null)
-            //    {
-            //        TimeSpan time = s.Vehicle.sw.Elapsed;
-            //        vehiclesTimer.Add(time);
-            //    }
-            //    if (s.Bikes[0] != null)
-            //    {
-            //        TimeSpan time = s.Bikes[0].sw.Elapsed;
-            //        vehiclesTimer.Add(time);
-            //    }
-            //    if (s.Bikes[1] != null)
-            //    {
-            //        TimeSpan time = s.Bikes[1].sw.Elapsed;
-            //        vehiclesTimer.Add(time);
-            //    }
 
-            //}
             // Serialize the list of spaces and their vehicles into JSON
             string jsonResponse = JsonSerializer.Serialize(Garage.Space);
 
@@ -139,6 +186,8 @@ namespace GarageParking
             await response.OutputStream.WriteAsync(Encoding.UTF8.GetBytes(jsonResponse));
             response.Close();
         }
+
+
     }
 }
 

@@ -9,6 +9,14 @@
 <body>
 
     <h1>Parking Spaces and Vehicles</h1>
+
+    <form id="checkoutForm" action="http://localhost:5000/checkout" method="POST" onsubmit="handleFormSubmit(event)">
+        <input type="text" id="licensePlate" placeholder="ABC123" required />
+        <button type="submit">Check out vehicle</button>
+    </form>
+   
+
+
     <table id="parkingTable">
         <thead>
             <tr>

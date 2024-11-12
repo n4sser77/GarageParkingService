@@ -17,7 +17,7 @@ namespace GarageParking
 
             string[] colors = { "blue", "red", "black", "gray" };
 
-            string[] makeArray = { "harely", "chev", "storm" };
+            string[] allBikeMakes = { "Harley Davidson", "Yamaha", "Ducati", "Kawasaki", "Honda", "BMW", "Suzuki", "Triumph", "Indian", "Royal Enfield", "Aprilia", "KTM", "Moto Guzzi", "Victory", "Husqvarna" };
             //       plate
             // car,       bus,        bike
             // electric,  passengers,  make
@@ -25,7 +25,7 @@ namespace GarageParking
             int type = rnd.Next(1, 4);
             int electric = rnd.Next(0, 1);
             int passangers = rnd.Next(7, 14);
-            int makeIndex = rnd.Next(0, 3);
+            int makeIndex = rnd.Next(0, 14);
             int color = rnd.Next(0, 4);
 
 
@@ -50,7 +50,7 @@ namespace GarageParking
 
                 case 3:
                     {
-                        return new MotorCycle(colors[color], makeArray[makeIndex]);
+                        return new MotorCycle(colors[color], allBikeMakes[makeIndex]);
                     }
                 default:
                     Console.WriteLine("Could not make random vehicle");
@@ -64,7 +64,7 @@ namespace GarageParking
         /// </summary>
         /// <param name="garage"></param>
         /// <returns></returns>
-        public static Vehicle GetPlateFromGarage(Garage garage)
+        public static Vehicle GetVehicleFromGaragge(Garage garage)
         {
             try
             {
@@ -76,7 +76,7 @@ namespace GarageParking
                 {
                     return v;
                 }
-                
+
 
                 return null;
             }
