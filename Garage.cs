@@ -18,6 +18,7 @@ namespace GarageParking
 
 
         public List<Space> Space { get; private set; }
+        public bool IsFull { get; set; }
 
 
         public List<Vehicle> VehiclesParked { get; private set; }   // for stats and debugging only
@@ -38,11 +39,17 @@ namespace GarageParking
 
         public bool park(Vehicle vehicle)
         {
+            IsFull = IsGarageFull();
             int spot = LookForSpot(vehicle);
             if (spot < 0)
             {
-                Console.WriteLine("No spots found for this vehicle");
-                return false;
+                Console.Write("No spots found for this vehicle");
+                Console.SetCursorPosition(0, Console.GetCursorPosition().Top);
+                Thread.Sleep(2000);
+                Console.Write(new string(' ', Console.WindowWidth));
+                Console.SetCursorPosition(0, Console.GetCursorPosition().Top-1);
+                Console.Write(new string(' ', Console.WindowWidth));
+               return false;
             }
 
 
@@ -73,6 +80,7 @@ namespace GarageParking
                     if (Space[spot].Bikes[j] == null)
                     {
                         Space[spot].Bikes[j] = vehicle as MotorCycle;
+                        Space[spot].Bikes[j].ParkedAt = spot;
                         Space[spot].IsTaken = true;
                         VehiclesParked.Add(vehicle);
                         Space[spot].VehicleType = vehicle.GetType().Name;
@@ -149,6 +157,7 @@ namespace GarageParking
         public bool CheckOut(Vehicle v, out string message)
         {
             bool found = false;
+            IsFull = IsGarageFull();
 
             for (int i = 0; i < Space.Count; i++)
             {
@@ -174,6 +183,7 @@ namespace GarageParking
                             }
 
                             VehiclesParked.Remove(VehiclesParked.FirstOrDefault(v));
+                            IsFull = IsGarageFull();
                             return true;
                         }
                     }
@@ -195,6 +205,7 @@ namespace GarageParking
                             Space[i + 1].Vehicle = null; // Clear the second spot of the bus
                             Space[i + 1].IsTaken = false;
                             VehiclesParked.Remove(VehiclesParked.FirstOrDefault(v));
+                            IsFull = IsGarageFull();
                             return true;
                         }
                     }
@@ -209,6 +220,7 @@ namespace GarageParking
                         Space[i].Vehicle = null;
                         Space[i].IsTaken = false;
                         VehiclesParked.Remove(VehiclesParked.FirstOrDefault(v));
+                        IsFull = IsGarageFull();
                         return true;
                     }
 
@@ -255,7 +267,7 @@ namespace GarageParking
                             }
 
                             VehiclesParked.Remove(VehiclesParked.FirstOrDefault(v));
-
+                            IsFull = IsGarageFull();
                             return true;
                         }
                     }
@@ -277,7 +289,7 @@ namespace GarageParking
                             VehiclesParked.Remove(VehiclesParked.FirstOrDefault(v));
                             Console.WriteLine("Bus checked out from spots " + i + " and " + (i + 1) + " Total price is " + v.Total.ToString("0.00") + "SEK");
 
-
+                            IsFull = IsGarageFull();
                             return true;
                         }
                     }
@@ -291,7 +303,7 @@ namespace GarageParking
                         Space[i].Vehicle = null;
                         Space[i].IsTaken = false;
                         VehiclesParked.Remove(VehiclesParked.FirstOrDefault(v));
-
+                        IsFull = IsGarageFull();
                         return true;
                     }
 
@@ -461,7 +473,23 @@ namespace GarageParking
         }
 
 
+        public bool IsGarageFull()
+        {
+            int takenSpot = 0;
+            foreach (Space space in Space)
+            {
+                if (space.IsTaken)
+                {
+                    takenSpot++;
+                }
+            }
 
+            if (takenSpot == MaxParkingSpaces)
+            {
+                return true;
+            }
+            return false;
+        }
 
     }
 

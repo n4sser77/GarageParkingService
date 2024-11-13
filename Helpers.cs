@@ -11,7 +11,10 @@ namespace GarageParking
         static private string Input { get; set; }
 
 
-
+        /// <summary>
+        /// Generats a new random vehicle
+        /// </summary>
+        /// <returns></returns>
         public static Vehicle RandomVehicle()
         {
 

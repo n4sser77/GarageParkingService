@@ -7,6 +7,9 @@ using System.Threading.Tasks;
 
 namespace GarageParking
 {
+    /// <summary>
+    /// Parking receipt data, currently used for logging in json
+    /// </summary>
     public class Receipt
     {
         public string VehicleType { get; set; }

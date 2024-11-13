@@ -6,7 +6,7 @@ namespace GarageParking
 {
     internal class Program
     {
-        static void Main(string[] args)
+        async static Task Main(string[] args)
         {
 
 
@@ -15,6 +15,8 @@ namespace GarageParking
             MyServer myserver = new MyServer(garage);
 
             Thread thread2 = new Thread(() => UpdateTotal(garage));
+
+            thread2.Start();
 
 
             myserver.StartServer();
@@ -60,45 +62,94 @@ namespace GarageParking
 
                 ConsoleKey key = Console.ReadKey(true).Key;
 
-                if (key == ConsoleKey.P)
+                switch (key)
                 {
-                    Console.Write("Enter plate to park: ");
-                    while (true)
-                    {
+                    case ConsoleKey.P:
 
-                        string input = Console.ReadLine();
-                        if (input.ToUpper() == v.LicensePlate && garage.park(v))
+                        while (true)
                         {
-                            Console.WriteLine("Vehicle parked successfully! ");
-                            break;
-                        }
-                        else
-                        {
-                            Console.WriteLine("Could not park vehicle...");
-                        }
-                        if (Console.ReadKey().Key == ConsoleKey.X)
-                        {
-                            break;
-                        }
-                    }
+                            (int l, int t) = Console.GetCursorPosition();
+                            Console.SetCursorPosition(l, t);
+                            Console.Write("Enter plate to park: ");
+                            string input = Console.ReadLine();
 
-                }
-                if (key == ConsoleKey.C)
-                {
-                    Console.Write("Enter plate to checkout: ");
-                    Vehicle c = Helpers.GetVehicleFromGaragge(garage);
-                    if (c == null)
-                    {
-                        Console.WriteLine("Vehcile not found...");
+                            if (input == "x")
+                            {
+                                break;
+                            }
+
+                            // Check if input matches the license plate and parking is successful
+                            if (input.ToUpper() == v.LicensePlate)
+                            {
+                                if (garage.park(v))
+                                {
+
+                                    Console.WriteLine("Vehicle parked successfully!");
+                                }
+                                else
+                                {
+                                    break;
+                                }
+                                break;
+                            }
+                            else if (input.ToUpper() != v.LicensePlate)
+                            {
+                                // Get the current cursor position after the input
+                                (int left, int top) = Console.GetCursorPosition();
+
+                                // Display error message on the same line
+                                Console.SetCursorPosition(0, top - 1);  // Move cursor up to overwrite the line with the prompt
+                                Console.Write(new string(' ', Console.WindowWidth));  // Clear the line
+                                Console.SetCursorPosition(0, top - 1);  // Set cursor back to start of cleared line
+                                Console.Write("Could not park vehicle... ");
+
+                                // Pause for feedback, then reset line for new input
+                                Thread.Sleep(2000);
+                                Console.SetCursorPosition(0, top - 1);  // Position cursor again to overwrite with "Try again"
+                                Console.Write(new string(' ', Console.WindowWidth));  // Clear line again
+                                Console.SetCursorPosition(0, top - 1);
+                                Console.Write("Try again, or type X to exit park mode");
+                            }
+
+
+
+
+
+                        }
+                        break;
+                    case ConsoleKey.C:
+                        Console.Write("Enter plate to checkout: ");
+                        Vehicle c = Helpers.GetVehicleFromGaragge(garage);
+                        if (c == null)
+                        {
+                            Console.Write("Vehcile not found...");
+                            Thread.Sleep(2000);
+                            (int left, int top) = Console.GetCursorPosition();
+                            Console.SetCursorPosition(0, top - 1);
+                            Console.WriteLine("                                                                      ");
+                            Console.WriteLine("                                                                      ");
+                            continue;
+                        }
+                        if (garage.CheckOut(c)) Console.WriteLine(c.ToString() + " Checked out successfully");
+                        else Console.WriteLine("Could not checkout...");
+                        break;
+
+
+                    default:
+
+                        Console.Write("skipping intervall......");
+                        Thread.Sleep(200);
+
+                        Console.SetCursorPosition(0, Console.GetCursorPosition().Top);
+                        Console.Write(new string(' ', Console.WindowWidth));
                         continue;
-                    }
-                    if (garage.CheckOut(c)) Console.WriteLine(c.ToString() + " Checked out successfully");
-                    else Console.WriteLine("Could not checkout...");
+
 
                 }
-                //var v = Helpers.GetPlate(garage);
 
-                Thread.Sleep(3000);
+                //var v = Helpers.GetPlate(garage);
+                Console.WriteLine("skipping intervall......");
+                Thread.Sleep(4000);
 
 
                 Console.Clear();
@@ -165,6 +216,13 @@ namespace GarageParking
             Console.Write(" to exit park mode");
             Console.BackgroundColor = ConsoleColor.Black;
             Console.ForegroundColor = ConsoleColor.White;
+
+            Console.BackgroundColor = ConsoleColor.White;
+            Console.ForegroundColor = ConsoleColor.Black;
+            Console.Write(", Press any key to skip interval ");
+
+            Console.BackgroundColor = ConsoleColor.Black;
+            Console.ForegroundColor = ConsoleColor.White;
         }
 
 
@@ -194,17 +252,58 @@ namespace GarageParking
                         (s.Bikes[1] as Vehicle).Total = Math.Round(total, 2);
                     }
 
+
+                }
+                Thread.Sleep(new TimeSpan(0, 1, 0));
+
+
+
+
+
+            }
+
+
+
+        }
+
+
+        async static public Task UpdateTotalAsync(Garage garage)
+        {
+            while (true)
+            {
+
+
+                foreach (Space s in garage.Space)
+                {
+                    if (s.Vehicle != null)
+                    {
+                        double total = s.Vehicle.sw.Elapsed.TotalMinutes / garage.PricePerMin;
+                        s.Vehicle.Total = Math.Round(total, 2);
+                    }
+
+                    if (s.Bikes[0] != null)
+                    {
+                        double total = s.Bikes[0].sw.Elapsed.TotalMinutes / garage.PricePerMin;
+                        (s.Bikes[0] as Vehicle).Total = Math.Round(total, 2);
+                    }
+
+                    if (s.Bikes[1] != null)
+                    {
+                        double total = s.Bikes[1].sw.Elapsed.TotalMinutes / garage.PricePerMin;
+                        (s.Bikes[1] as Vehicle).Total = Math.Round(total, 2);
+                    }
+
                 }
 
 
 
-                Thread.Sleep(1000);
+
 
             }
+
         }
 
+
+
     }
-
-
-
 }

@@ -32,7 +32,7 @@ namespace GarageParking
             listener.Prefixes.Add("http://localhost:5000/");
 
             listener.Start();
-            Console.SetCursorPosition(0, 23);
+            Console.SetCursorPosition(0, 26);
             Console.WriteLine("HTTP Server started on http://localhost:5000");
 
             while (true)
@@ -71,14 +71,18 @@ namespace GarageParking
                     await HandleRoot(response);
                     break;
                 case "/arrive":
-                    await HandleArrive(response);
+                    await HandleArrive(response, request);
                     break;
                 case "/checkout":
                     await HandleCheckout(response, request);
                     break;
-                case "/list":
+                case "/api/list":
                     await HandleListJson(response);
                     break;
+                case "/api/isfull":
+                    await HandleIsFull(response);
+                    break;
+
                 default:
                     response.StatusCode = 404;
                     await response.OutputStream.WriteAsync(Encoding.UTF8.GetBytes("Endpoint not found"));
@@ -88,12 +92,56 @@ namespace GarageParking
             response.Close();
         }
 
-        // Route handlers (minimal responses for now)
-        async Task HandleArrive(HttpListenerResponse response)
+
+
+        async Task HandleIsFull(HttpListenerResponse response)
         {
-            string message = "Arrive route accessed";
+            string jsonbool = JsonSerializer.Serialize(Garage.IsFull);
+
+            // Set the response type to JSON
+            response.ContentType = "application/json";
             response.StatusCode = 200;
-            await response.OutputStream.WriteAsync(Encoding.UTF8.GetBytes(message));
+
+
+            await response.OutputStream.WriteAsync(Encoding.UTF8.GetBytes(jsonbool));
+        }
+
+
+        // Route handlers (minimal responses for now)
+        async Task HandleArrive(HttpListenerResponse response, HttpListenerRequest request)
+        {
+            if (request.HttpMethod == "POST")
+            {
+
+
+                string message = " proccess started";
+                try
+                {
+                    Vehicle v = Helpers.RandomVehicle();
+                    if (Garage.park(v))
+                    {
+                        message = v.ToString() + " Parked in " + (v.ParkedAt + 1);
+                    }
+                    else
+                    {
+                        message = "No room for vehicle " + v.ToString();
+                    }
+
+                }
+                catch (Exception e)
+                {
+
+                    message = $"Error proccessing checkout: {e.Message}";
+                    response.StatusCode = 500;
+                }
+
+                response.StatusCode = 200;
+                await response.OutputStream.WriteAsync(Encoding.UTF8.GetBytes(message));
+
+
+            }
+
+
         }
 
         async Task HandleCheckout(HttpListenerResponse response, HttpListenerRequest request)
@@ -103,11 +151,13 @@ namespace GarageParking
                 using (StreamReader sr = new StreamReader(request.InputStream, request.ContentEncoding))
                 {
                     string licensePlateData = await sr.ReadToEndAsync();
-                    string message = string.Empty;
+                    string message = "NOT FOUND";
 
-                    // only when using named input field in html
+                    /* only when using named input field in html
                     // NameValueCollection ParsedData = HttpUtility.ParseQueryString(licensePlateData);
                     // string licensePlate = ParsedData["licensePlate"];
+                    */
+
                     try
                     {
                         Vehicle v = Garage.FindPlate(licensePlateData);
@@ -153,10 +203,11 @@ namespace GarageParking
 
             // Construct a response.
             string responseString = "<HTML><BODY> Hello world!</BODY></HTML>";
+            response.ContentType = "text/html";
             byte[] buffer = System.Text.Encoding.UTF8.GetBytes(responseString);
             // Get a response stream and write the response to it.
             response.ContentLength64 = buffer.Length;
-            System.IO.Stream output = response.OutputStream;
+            Stream output = response.OutputStream;
             output.Write(buffer, 0, buffer.Length);
             // You must close the output stream.
             output.Close();
@@ -164,12 +215,10 @@ namespace GarageParking
 
         }
 
-        async Task HandleList(HttpListenerResponse response)
-        {
-            string message = "List route accessed";
-            response.StatusCode = 200;
-            await response.OutputStream.WriteAsync(Encoding.UTF8.GetBytes(message));
-        }
+
+
+
+
 
         async Task HandleListJson(HttpListenerResponse response)
         {
@@ -178,14 +227,20 @@ namespace GarageParking
             string jsonResponse = JsonSerializer.Serialize(Garage.Space);
 
 
+
             // Set the response type to JSON
             response.ContentType = "application/json";
             response.StatusCode = 200;
 
             // Write the serialized JSON to the response stream
             await response.OutputStream.WriteAsync(Encoding.UTF8.GetBytes(jsonResponse));
-            response.Close();
+
+
         }
+
+
+
+
 
 
     }
