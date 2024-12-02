@@ -1,0 +1,55 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Parking Spaces</title>
+    <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+
+    <h1>Parking Spaces and Vehicles</h1>
+
+    <form action="http://localhost:5000/checkout" method="POST" class="form-container" onsubmit="handleFormSubmit(event)">
+        <input type="text"
+               placeholder="ABC123"
+               id="licensePlate"
+               maxlength="6"
+               minlength="6"
+               style="text-transform: uppercase;"
+               required
+               title="Please enter exactly 6 uppercase letters or numbers." />
+        <button type="submit">Check out vehicle</button>
+    </form>
+
+    <form action="http://localhost:5000/arrive" method="POST" class="form-container" onsubmit="handleFormSubmit(event)">
+        <button type="submit">
+            Let new vehicle park
+        </button>
+    </form>
+
+    <h3 id="FREE"> Is it full?</h3>
+    <h3 id="sales"> Total sales: </h3>
+
+
+
+    <table id="parkingTable">
+        <thead>
+            <tr>
+                <th>Space #</th>
+                <th>Status</th>
+                <th>Vehicle</th>
+                <th>Bikes</th>
+                <th>Time Spent</th>
+            </tr>
+        </thead>
+        <tbody>
+            <!-- Dynamic rows will be inserted here -->
+        </tbody>
+    </table>
+
+    <script src="/script.js">
+
+    </script>
+</body>
+</html>
