@@ -16,7 +16,7 @@ namespace GarageParking
         public double MaxParkingSpaces { get; private set; } = 15;
         public double PricePerMin { get; private set; } = 1.5;
 
-
+        public double TotalSales { get; set; }
         public List<Space> Space { get; private set; }
         public bool IsFull { get; set; }
 
@@ -47,9 +47,9 @@ namespace GarageParking
                 Console.SetCursorPosition(0, Console.GetCursorPosition().Top);
                 Thread.Sleep(2000);
                 Console.Write(new string(' ', Console.WindowWidth));
-                Console.SetCursorPosition(0, Console.GetCursorPosition().Top-1);
+                Console.SetCursorPosition(0, Console.GetCursorPosition().Top - 1);
                 Console.Write(new string(' ', Console.WindowWidth));
-               return false;
+                return false;
             }
 
 

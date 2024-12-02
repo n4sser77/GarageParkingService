@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Linq;
 using System.Net;
+using System.Reflection.Metadata;
 using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
@@ -82,6 +83,9 @@ namespace GarageParking
                 case "/api/isfull":
                     await HandleIsFull(response);
                     break;
+                case "/api/total-sales":
+                    await HandleTotalSales(response);
+                    break;
 
                 default:
                     response.StatusCode = 404;
@@ -93,7 +97,16 @@ namespace GarageParking
         }
 
 
+        async Task HandleTotalSales(HttpListenerResponse response)
+        {
+            Receipt.UpdateTotalSales();
+            string JSON = JsonSerializer.Serialize(Receipt.TotalSales);
 
+            response.ContentType = "application/json";
+            response.StatusCode = (int)HttpStatusCode.OK;
+            await response.OutputStream.WriteAsync(Encoding.UTF8.GetBytes(JSON));
+
+        }
         async Task HandleIsFull(HttpListenerResponse response)
         {
             string jsonbool = JsonSerializer.Serialize(Garage.IsFull);

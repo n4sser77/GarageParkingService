@@ -12,6 +12,8 @@ namespace GarageParking
     /// </summary>
     public class Receipt
     {
+        static string filePath = "receipts.json";
+        static public double TotalSales { get; set; }
         public string VehicleType { get; set; }
         public string LicensePlate { get; set; }
         public int ParkingSpot { get; set; }
@@ -21,12 +23,13 @@ namespace GarageParking
         public Receipt()
         {
             Timestamp = DateTime.Now;
+
         }
 
 
         public void LogReceipt(Receipt receipt)
         {
-            string filePath = "receipts.json";
+
             List<Receipt> receipts = new List<Receipt>();
 
             // Read existing data if file exists
@@ -40,6 +43,37 @@ namespace GarageParking
             receipts.Add(receipt);
             string jsonData = JsonSerializer.Serialize(receipts, new JsonSerializerOptions { WriteIndented = true });
             File.WriteAllText(filePath, jsonData);
+        }
+
+        static public void UpdateTotalSales()
+        {
+
+            List<Receipt> rs = GetAllReceipts();
+            double total = 0;
+            foreach (Receipt r in rs)
+            {
+                total += r.Price;
+            }
+            TotalSales = Math.Round(total,2);
+
+        }
+
+        static public List<Receipt> GetAllReceipts()
+        {
+
+            List<Receipt> rs = new List<Receipt>();
+            if (File.Exists(filePath))
+            {
+                string existingData = File.ReadAllText(filePath);
+                rs = JsonSerializer.Deserialize<List<Receipt>>(existingData) ?? new List<Receipt>();
+                return rs;
+            }
+            else
+            {
+                return null;
+            }
+
+
         }
 
     }
